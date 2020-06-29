@@ -1,9 +1,28 @@
+<head>
+    <style>
+
+        body {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        }
+        table {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+        
+        h2 {
+          color: rgb(32, 32, 32);
+          font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        }
+        </style>
+</head>
+<body>
 <table class="fixed" border="0">
     <col width="1000px" />
     <col width="500px" />
     <tr>
         <td>
-            <h2>ESP32 File Server</h2>
+            <h2>rusEFI Firmware Server</h2>
         </td>
         <td>
             <table border="0">
@@ -42,8 +61,8 @@
 
         /* Max size of an individual file. Make sure this
          * value is same as that set in file_server.c */
-        var MAX_FILE_SIZE = 200 * 1024;
-        var MAX_FILE_SIZE_STR = "200KB";
+        var MAX_FILE_SIZE = 1024 * 1024;
+        var MAX_FILE_SIZE_STR = "1MB";
 
         if (fileInput.length == 0) {
             alert("No file selected!");
@@ -57,8 +76,8 @@
         else if (filePath[filePath.length - 1] == '/') {
             alert("File name not specified after path!");
         }
-        else if (fileInput[0].size > 200 * 1024) {
-            alert("File size must be less than 200KB!");
+        else if (fileInput[0].size > MAX_FILE_SIZE) {
+            alert("File size must be less than 1MB!");
         }
         else {
             document.getElementById("newfile").disabled = true;
@@ -94,3 +113,4 @@
         }
     }
 </script>
+</body>
