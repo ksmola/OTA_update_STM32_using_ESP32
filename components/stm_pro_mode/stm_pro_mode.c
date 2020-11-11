@@ -19,6 +19,8 @@ void initFlashUART(void)
     uart_set_rts(UART_CONTROLLER, 1);
 
     logI(TAG_STM_PRO, "%s", "Initialized Flash UART");
+    logI(TAG_STM_PRO, "Serial baud: (%d)", UART_BAUD_RATE);
+
 }
 
 void initSPIFFS(void)
@@ -79,6 +81,7 @@ void initGPIO(void)
 void resetSTM(void)
 {
     logI(TAG_STM_PRO, "%s", "Starting RESET Procedure");
+    logI(TAG_STM_PRO, "Toggling pin (%d)", RESET_PIN);
 
     gpio_set_level(RESET_PIN, LOW);
     vTaskDelay(100 / portTICK_PERIOD_MS);
@@ -105,13 +108,14 @@ void setupSTM(void)
     cmdGet();
     cmdVersion();
     cmdId();
-    cmdErase();
+    unProtect();
+    // cmdErase();
     cmdExtErase();
 }
 
 int cmdSync(void)
 {
-    logI(TAG_STM_PRO, "%s", "SYNC");
+    logI(TAG_STM_PRO, "%s", "SYNC, 0x7F");
 
     char bytes[] = {0x7F};
     int resp = 1;
@@ -141,6 +145,14 @@ int cmdId(void)
     logI(TAG_STM_PRO, "%s", "CHECK ID");
     char bytes[] = {0x02, 0xFD};
     int resp = 5;
+    return sendBytes(bytes, sizeof(bytes), resp);
+}
+
+int unProtect(void)
+{
+    logI(TAG_STM_PRO, "%s", "Write Unprotect");
+    char bytes[] = {0x73, 0x8C};
+    int resp = 1;
     return sendBytes(bytes, sizeof(bytes), resp);
 }
 
@@ -207,6 +219,7 @@ int loadAddress(const char adrMS, const char adrMI, const char adrLI, const char
 int sendBytes(const char *bytes, int count, int resp)
 {
     sendData(TAG_STM_PRO, bytes, count);
+    ESP_LOG_BUFFER_HEXDUMP("SENDING", bytes, count, ESP_LOG_DEBUG);
     int length = waitForSerialData(resp, SERIAL_TIMEOUT);
 
     if (length > 0)
@@ -217,7 +230,7 @@ int sendBytes(const char *bytes, int count, int resp)
         if (rxBytes > 0 && data[0] == ACK)
         {
             logI(TAG_STM_PRO, "%s", "Sync Success");
-            // ESP_LOG_BUFFER_HEXDUMP("SYNC", data, rxBytes, ESP_LOG_DEBUG);
+            ESP_LOG_BUFFER_HEXDUMP("SYNC", data, rxBytes, ESP_LOG_DEBUG);
             return 1;
         }
         else

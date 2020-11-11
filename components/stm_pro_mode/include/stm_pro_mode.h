@@ -46,7 +46,7 @@
 #define LOW 0
 
 #define ACK 0x79
-#define SERIAL_TIMEOUT 5000
+#define SERIAL_TIMEOUT 50000
 
 #define FILE_PATH_MAX 128
 #define BASE_PATH "/spiffs/"
@@ -95,6 +95,8 @@ int cmdWrite(void);
 
 //Read data from flash memory address
 int cmdRead(void);
+
+int unProtect(void);
 
 //UART send data to STM32Fxx & wait for response
 int sendBytes(const char *bytes, int count, int resp);
