@@ -105,10 +105,11 @@ void setupSTM(void)
 {
     resetSTM();
     cmdSync();
+    cmdReadUnprotect();
+    cmdWriteUnprotect();
     cmdGet();
     cmdVersion();
     cmdId();
-    unProtect();
     // cmdErase();
     cmdExtErase();
 }
@@ -148,10 +149,18 @@ int cmdId(void)
     return sendBytes(bytes, sizeof(bytes), resp);
 }
 
-int unProtect(void)
+int cmdWriteUnprotect(void)
 {
     logI(TAG_STM_PRO, "%s", "Write Unprotect");
     char bytes[] = {0x73, 0x8C};
+    int resp = 1;
+    return sendBytes(bytes, sizeof(bytes), resp);
+}
+
+int cmdReadUnprotect(void);
+{
+    logI(TAG_STM_PRO, "%s", "Read Unprotect");
+    char bytes[] = {0x92, 0x6D};
     int resp = 1;
     return sendBytes(bytes, sizeof(bytes), resp);
 }
@@ -236,6 +245,7 @@ int sendBytes(const char *bytes, int count, int resp)
         else
         {
             logE(TAG_STM_PRO, "%s", "Sync Failure");
+            ESP_LOG_BUFFER_HEXDUMP("SYNC", data, rxBytes, ESP_LOG_DEBUG);
             return 0;
         }
     }
