@@ -36,7 +36,8 @@
 
 #define TXD_PIN (GPIO_NUM_4) //(GPIO_NUM_1)
 #define RXD_PIN (GPIO_NUM_5) //(GPIO_NUM_3)
-#define UART_BAUD_RATE 115200
+// #define UART_BAUD_RATE 115200 
+#define UART_BAUD_RATE 921600
 #define UART_BUF_SIZE 1024
 #define UART_CONTROLLER UART_NUM_1
 
@@ -46,7 +47,7 @@
 #define LOW 0
 
 #define ACK 0x79
-#define SERIAL_TIMEOUT 5000
+#define SERIAL_TIMEOUT 50000
 
 #define FILE_PATH_MAX 128
 #define BASE_PATH "/spiffs/"

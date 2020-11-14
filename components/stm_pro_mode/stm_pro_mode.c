@@ -157,7 +157,7 @@ int cmdWriteUnprotect(void)
     return sendBytes(bytes, sizeof(bytes), resp);
 }
 
-int cmdReadUnprotect(void);
+int cmdReadUnprotect(void)
 {
     logI(TAG_STM_PRO, "%s", "Read Unprotect");
     char bytes[] = {0x92, 0x6D};
