@@ -51,21 +51,21 @@ static esp_err_t favicon_get_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-const char* getStatus(flash_stat flashstatus)
+char* getStatus(flash_stat flashstatus)
 {
     switch (flashstatus)
     {
     case FAILED:
-        return "FAILED";
+        return "<b style=\"color:red\">FAILED</b>";
         break;
     case FLASHED_OK:
-        return "FLASHED_OK";
+        return "<b style=\"color:green\">FLASHED OK</b>";
         break;
     case UNKNOWN:
-        return "UNKNOWN";
+        return "<b> </b>";
         break;
     }
-    return "UNKNOWN";
+    return "<b> </b>";
 
 }
 
@@ -84,13 +84,16 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
 
     DIR *dir = opendir(dirpath);
     const size_t dirpath_len = strlen(dirpath);
-    // char * dest [1000];
-    // char * a = "Flash Status: ";
-    // char * b = getStatus(flashstatus);
-    // char * c = "<table class=\"fixed\" border=\"1\"> <col width=\"800px\"/> <col width=\"300px\"/> <col width=\"300px\"/> <col width=\"75px\"/> <col width=\"100px\"/> <thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th><th>Flash</th><th>Delete</th></tr></thead><tbody>";
-    // strcat(dest, a);
-    // strcat(dest, b);
-    // strcat(dest, c);
+    char dest [1000];
+    for (size_t i = 0; i < 1000; i++){dest[i] = 0;}
+    
+    
+    char * a = "Flash Status: ";
+    char * b = getStatus(flashstatus);
+    const char * c = "<table class=\"fixed\" border=\"1\"> <col width=\"800px\"/> <col width=\"300px\"/> <col width=\"300px\"/> <col width=\"75px\"/> <col width=\"100px\"/> <thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th><th>Flash</th><th>Delete</th></tr></thead><tbody>";
+    strcat(dest, a);
+    strcat(dest, b);
+    strcat(dest, c);
 
     /* Retrieve the base path of file storage to construct the full path */
     strlcpy(entrypath, dirpath, sizeof(entrypath));
@@ -116,36 +119,7 @@ static esp_err_t http_resp_dir_html(httpd_req_t *req, const char *dirpath)
 
     // httpd_resp_sendstr_chunk(req, dest);
     // /* Send file-list table definition and column labels */
-
-    if (flashstatus == FAILED)
-    {
-        httpd_resp_sendstr_chunk(req,
-                                 "<b>FLASH FAILED</b>"
-                                 "<table class=\"fixed\" border=\"1\">"
-                                 "<col width=\"800px\"/> <col width=\"300px\"/> <col width=\"300px\"/> <col width=\"75px\"/> <col width=\"100px\"/>"
-                                 "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th><th>Flash</th><th>Delete</th></tr></thead>"
-                                 "<tbody>");
-    }
-    else if (flashstatus == FLASHED_OK)
-    {
-        httpd_resp_sendstr_chunk(req,
-                                 "<b>FLASHED OK</b>"
-                                 "<table class=\"fixed\" border=\"1\">"
-                                 "<col width=\"800px\"/> <col width=\"300px\"/> <col width=\"300px\"/> <col width=\"75px\"/> <col width=\"100px\"/>"
-                                 "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th><th>Flash</th><th>Delete</th></tr></thead>"
-                                 "<tbody>");
-    }
-    else
-    {
-        httpd_resp_sendstr_chunk(req,
-                                 "<b>FLASH STATUS UNKNOWN</b>"
-                                 "<table class=\"fixed\" border=\"1\">"
-                                 "<col width=\"800px\"/> <col width=\"300px\"/> <col width=\"300px\"/> <col width=\"75px\"/> <col width=\"100px\"/>"
-                                 "<thead><tr><th>Name</th><th>Type</th><th>Size (Bytes)</th><th>Flash</th><th>Delete</th></tr></thead>"
-                                 "<tbody>");
-
-    }
-    
+    httpd_resp_sendstr_chunk(req, dest);
 
     /* Iterate over all files / folders and fetch their names and sizes */
     while ((entry = readdir(dir)) != NULL)
