@@ -80,7 +80,7 @@ void initGPIO(void)
 
 void resetSTM(void)
 {
-    logI(TAG_STM_PRO, "%s", "Starting RESET Procedure");
+    logI(TAG_STM_PRO, "%s", "Starting STM RESET Procedure");
     logI(TAG_STM_PRO, "Toggling pin (%d)", RESET_PIN);
 
     gpio_set_level(RESET_PIN, LOW);
@@ -88,7 +88,7 @@ void resetSTM(void)
     gpio_set_level(RESET_PIN, HIGH);
     vTaskDelay(500 / portTICK_PERIOD_MS);
 
-    logI(TAG_STM_PRO, "%s", "Finished RESET Procedure");
+    // logI(TAG_STM_PRO, "%s", "Finished RESET Procedure");
 }
 
 void endConn(void)
@@ -103,15 +103,17 @@ void endConn(void)
 
 void setupSTM(void)
 {
+    logI(TAG_STM_PRO, "%s", "Starting STM Setup");
     resetSTM();
     cmdSync();
-    cmdReadUnprotect();
-    cmdWriteUnprotect();
+    // cmdReadUnprotect();
+    // cmdWriteUnprotect();
     cmdGet();
     cmdVersion();
     cmdId();
     // cmdErase();
-    cmdExtErase();
+    // cmdExtErase();
+
 }
 
 int cmdSync(void)
@@ -197,6 +199,7 @@ int cmdExtErase(void)
         return sendBytes(params, sizeof(params), resp);
     }
     return 0;
+        // sleep(5);
 }
 
 int cmdWrite(void)
